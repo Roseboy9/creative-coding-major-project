@@ -12,14 +12,15 @@ class Bird {
         blue: '#0096c7',
         red: '#ff2c2c'
       };
-    }
+  }
     // Applying translation (to shift coordinate system's origin), scaling (for proportionality in size during window resizing), and set noStroke once
   applyTransform() {
     push();
     translate(this.offsetX, this.offsetY);
     scale(this.scaleFactor);
     noStroke(); // Set once for all shapes
- }
+  }
+
 // Creating a function for the head and beak shape
   drawHead() {
     fill(this.colors.gold);
@@ -97,7 +98,6 @@ class Bird {
     vertex(650, 500);
     vertex(445, 560);
     endShape(CLOSE);
-
   }
 
   // Creating a function for the wing shapes
@@ -164,6 +164,19 @@ class Bird {
     vertex(445, 560);
     endShape(CLOSE);
   }
+
+// Main draw method to render the entire bird
+draw() {
+  this.applyTransform();
+  this.drawHead();
+  this.drawNape();
+  this.drawNeck();
+  this.drawBody();
+  this.drawWing();
+  this.drawTail();
+  this.drawFeather();
+  pop();
+ }
 }
 
   // Global bird instance
