@@ -164,6 +164,35 @@ class Bird {
     vertex(445, 560);
     endShape(CLOSE);
   }
+}
 
-  
+  // Global bird instance
+let bird;
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  rectMode(CENTER);
+  background('#ffffff');
+  // Instantiate bird with dynamic scale and centered position
+  updateBird();
+}
+
+function draw() {
+  bird.draw();
+}
+
+// To ensure that the canvas is resized and the bird updated when window size changes
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  updateBird();
+}
+
+// Update bird's scale and position based on canvas size
+function updateBird() {
+  // Scale based on smaller dimension to fit the bird
+  let scaleFactor = min(windowWidth, windowHeight) / 900;
+  // Center the bird by offsetting to canvas center, accounting for original 900x900 coordinates
+  let offsetX = windowWidth / 2 - (450 * scaleFactor); // Approximate center of bird's x-range
+  let offsetY = windowHeight / 2 - (425 * scaleFactor); // Approximate center of bird's y-range
+  bird = new Bird(scaleFactor, offsetX, offsetY);
 }
