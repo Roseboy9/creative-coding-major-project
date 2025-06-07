@@ -13,7 +13,6 @@ class Bird {
         red: '#ff2c2c'
       };
     }
-
     // Applying translation (to shift coordinate system's origin), scaling (for proportionality in size during window resizing), and set noStroke once
   applyTransform() {
     push();
@@ -21,5 +20,150 @@ class Bird {
     scale(this.scaleFactor);
     noStroke(); // Set once for all shapes
  }
+// Creating a function for the head and beak shape
+  drawHead() {
+    fill(this.colors.gold);
+    beginShape();
+    vertex(570, 100);
+    vertex(610, 98);
+    vertex(750, 150);
+    vertex(660, 210);
+    vertex(650, 250);
+    vertex(520, 300);
+    endShape(CLOSE);
 
+    // Eye
+    fill(this.colors.black);
+    ellipse(605, 140, 35, 35);
+  }
+
+  // Creating a function for the nape shape
+  drawNape() {
+    fill(this.colors.green);
+    beginShape();
+    vertex(450, 200);
+    vertex(520, 300);
+    vertex(570, 100);
+    endShape(CLOSE);
+  }
+
+  // Creating a function for the neck shape
+  drawNeck() {
+    fill(this.colors.orange);
+    beginShape();
+    vertex(650, 250);
+    vertex(520, 300);
+    vertex(680, 400);
+    endShape(CLOSE);
+  }
+
+  // Creating a function for the body shapes
+  drawBody() {
+    // Back
+    fill(this.colors.cream);
+    beginShape();
+    vertex(450, 200);
+    vertex(520, 300);
+    vertex(340, 330);
+    endShape(CLOSE);
+
+    fill(this.colors.red);
+    beginShape();
+    vertex(340, 330);
+    vertex(220, 455);
+    vertex(432, 530);
+    endShape(CLOSE);
+
+    fill(this.colors.cream);
+    beginShape();
+    vertex(220, 455);
+    vertex(340, 330);
+    vertex(100, 300);
+    endShape(CLOSE);
+
+    // Throat
+    fill(this.colors.blue);
+    beginShape();
+    vertex(680, 400);
+    vertex(650, 500);
+    vertex(520, 300);
+    endShape(CLOSE);
+
+    // Belly
+    fill(this.colors.gold);
+    beginShape();
+    vertex(340, 330);
+    vertex(520, 300);
+    vertex(650, 500);
+    vertex(445, 560);
+    endShape(CLOSE);
+
+  }
+
+  // Creating a function for the wing shapes
+  drawWing() {
+    fill(this.colors.gold);
+    beginShape();
+    vertex(340, 330);
+    vertex(230, 200);
+    vertex(433, 220);
+    endShape(CLOSE);
+
+    fill(this.colors.cream);
+    beginShape();
+    vertex(230, 200);
+    vertex(100, 50);
+    vertex(340, 80);
+    endShape(CLOSE);
+
+    fill(this.colors.blue);
+    beginShape();
+    vertex(340, 80);
+    vertex(450, 200);
+    vertex(433, 220);
+    vertex(230, 200);
+    endShape(CLOSE);
+  }
+
+  // Creating a function for the tail shape
+  drawTail() {
+    fill(this.colors.orange);
+    beginShape();
+    vertex(220, 455);
+    vertex(100, 630);
+    vertex(80, 550);
+    vertex(0, 520);
+    vertex(181, 405);
+    endShape(CLOSE);
+  }
+
+  // Creating a function for the feather shapes
+  drawFeather() {
+    fill(this.colors.red);
+    beginShape();
+    vertex(445, 560);
+    vertex(500, 800);
+    vertex(150, 800);
+    vertex(170, 760);
+    vertex(350, 700);
+    endShape(CLOSE);
+
+    fill(this.colors.gold);
+    beginShape();
+    vertex(170, 760);
+    vertex(350, 700);
+    vertex(350, 501);
+    vertex(300, 483);
+    endShape(CLOSE);
+
+    fill(this.colors.green);
+    beginShape();
+    vertex(350, 700);
+    vertex(350, 501);
+    vertex(432, 530);
+    vertex(445, 560);
+    endShape(CLOSE);
+  }
+
+  
 }
