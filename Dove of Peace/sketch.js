@@ -4,13 +4,13 @@ class Bird {
     this.offsetX = offsetX; // Offset to center the bird
     this.offsetY = offsetY; // Offset to center the bird
     this.colors = {
-      gold: [212, 175, 55],   // #d4af37
-      black: [0, 0, 0],       // #000000
-      green: [0, 128, 0],     // #008000
-      orange: [255, 110, 0],  // #ff6e00
-      cream: [240, 230, 140], // #f0e68c
-      blue: [0, 150, 199],    // #0096c7
-      grey: [54, 69, 79]      // #36454f
+      pale: [233, 230, 226], // #E9E6E2
+      black: [0, 0, 0], // #000000
+      ghost: [220, 220, 220], // #DCDCDC
+      white: [240, 234, 226], // #F0EAE2
+      cream: [249, 249, 249], // #F9F9F9
+      greylight: [234, 234, 234], // #EAEAEA
+      grey: [221, 221, 221], // #DDDDDD
     };
   }
 
@@ -24,7 +24,7 @@ class Bird {
 
   // Creating a function for the head and beak shape
   drawHead() {
-    fill(this.colors.gold);
+    fill(this.colors.pale);
     beginShape();
     vertex(570, 100);
     vertex(610, 98);
@@ -41,7 +41,7 @@ class Bird {
 
   // Creating a function for the nape shape
   drawNape() {
-    fill(this.colors.green);
+    fill(this.colors.ghost);
     beginShape();
     vertex(450, 200);
     vertex(520, 300);
@@ -51,7 +51,7 @@ class Bird {
 
   // Creating a function for the neck shape
   drawNeck() {
-    fill(this.colors.green);
+    fill(this.colors.ghost);
     beginShape();
     vertex(650, 250);
     vertex(520, 300);
@@ -62,7 +62,7 @@ class Bird {
   // Creating a function for the body shapes
   drawBody() {
     // Back
-    fill(this.colors.blue);
+    fill(this.colors.greylight);
     beginShape();
     vertex(450, 200);
     vertex(520, 300);
@@ -86,7 +86,7 @@ class Bird {
     endShape(CLOSE);
 
     // Throat
-    fill(this.colors.blue);
+    fill(this.colors.greylight);
     beginShape();
     vertex(680, 400);
     vertex(650, 500);
@@ -94,7 +94,7 @@ class Bird {
     endShape(CLOSE);
 
     // Belly
-    fill(this.colors.orange);
+    fill(this.colors.white);
     beginShape();
     vertex(340, 330);
     vertex(520, 300);
@@ -105,7 +105,7 @@ class Bird {
 
   // Creating a function for the wing shapes
   drawWing() {
-    fill(this.colors.gold);
+    fill(this.colors.pale);
     beginShape();
     vertex(340, 330);
     vertex(230, 200);
@@ -131,7 +131,7 @@ class Bird {
 
   // Creating a function for the tail shape
   drawTail() {
-    fill(this.colors.orange);
+    fill(this.colors.white);
     beginShape();
     vertex(220, 455);
     vertex(100, 630);
@@ -143,7 +143,7 @@ class Bird {
 
   // Creating a function for the feather shapes
   drawFeather() {
-    fill(this.colors.green);
+    fill(this.colors.ghost);
     beginShape();
     vertex(445, 560);
     vertex(500, 800);
@@ -152,7 +152,7 @@ class Bird {
     vertex(350, 700);
     endShape(CLOSE);
 
-    fill(this.colors.gold);
+    fill(this.colors.white);
     beginShape();
     vertex(170, 760);
     vertex(350, 700);
@@ -160,7 +160,7 @@ class Bird {
     vertex(300, 483);
     endShape(CLOSE);
 
-    fill(this.colors.blue);
+    fill(this.colors.greylight);
     beginShape();
     vertex(350, 700);
     vertex(350, 501);
@@ -269,10 +269,10 @@ function drawOliveBranch(scaleFactor, offsetX, offsetY) {
 
   // Stem
   stroke(34, 139, 34); // Olive green
-  strokeWeight(15);
+  strokeWeight(8);
   noFill();
   let centerX = 752;
-  let centerY = 175;
+  let centerY = 180;
   bezier(
     centerX, centerY + 80,
     centerX + 30, centerY - 25,
@@ -294,7 +294,7 @@ function drawOliveBranch(scaleFactor, offsetX, offsetY) {
   drawLeaf(80);
   pop();
   push();
-  translate(centerX - 83, centerY - 105);
+  translate(centerX - 81, centerY - 105);
   rotate(radians(30));
   drawLeaf(80);
   pop();
