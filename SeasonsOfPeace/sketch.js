@@ -1,343 +1,175 @@
-// === Final Integrated Sketch: Background + Bird + Olive Branch ===
-let colors;
-let flagColors;
-let bird;
-
-function setup() {
-  createCanvas(windowWidth, windowHeight);
-  angleMode(DEGREES);
-  rectMode(CENTER);
-  noLoop();
-
-  // 多国旗颜色合集
-  flagColors = [
-    ['#0055A4', '#FFFFFF', '#EF4135'], // 法国 🇫🇷
-    ['#000000', '#FF0000', '#FFCC00'], // 德国 🇩🇪
-    ['#008C45', '#F4F5F0', '#CD212A'], // 意大利 🇮🇹
-    ['#FFFFFF', '#BC002D'],            // 日本 🇯🇵
-    ['#006AA7', '#FECC00']             // 瑞典 🇸🇪
-  ];
-
-  // 扁平展开用于 scatter 使用
-  colors = [].concat(...flagColors);
-  background(0);
-
-  drawScatterDecorations(200);
-  drawPatternCircles(20);
-  updateBird();
-  bird.draw();
-  drawOliveBranch();
-}
-
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
-  background(0);
-  drawScatterDecorations(200);
-  drawPatternCircles(20);
-  updateBird();
-  bird.draw();
-  drawOliveBranch();
-}
-
-function drawScatterDecorations(count) {
-  let points = [];
-  let attempts = 0;
-  let maxAttempts = 10000;
-  let minDist = 35;
-
-  while (points.length < count && attempts < maxAttempts) {
-    let x = random(width);
-    let y = random(height);
-    let valid = true;
-    for (let p of points) {
-      if (dist(x, y, p.x, p.y) < minDist) {
-        valid = false;
-        break;
-      }
-    }
-    if (valid) points.push({ x, y });
-    attempts++;
-  }
-
-  for (let p of points) {
-    fill(random(colors));
-    noStroke();
-    if (random() < 0.5) {
-      circle(p.x, p.y, 12);
-    } else {
-      push();
-      translate(p.x, p.y);
-      rotate(random(360));
-      triangle(-10, 8, 10, 8, 0, -12);
-      pop();
-    }
-  }
-}
-
-function drawPatternCircles(n) {
-  let circles = [];
-  let attempts = 0;
-  while (circles.length < n && attempts < 500) {
-    let x = random(60, width - 60);
-    let y = random(60, height - 60);
-    let tooClose = false;
-    for (let c of circles) {
-      if (dist(x, y, c.x, c.y) < 70) {
-        tooClose = true;
-        break;
-      }
-    }
-    if (!tooClose) circles.push({ x, y });
-    attempts++;
-  }
-  for (let c of circles) {
-    drawPatternCircle(c.x, c.y, 60);
-  }
-}
-
-function drawPatternCircle(x, y, r) {
-  push();
-  translate(x, y);
-  fill("black");
-  stroke(0);
-  ellipse(0, 0, r);
-  noStroke();
-
-  let palette = random(flagColors); // 随机一组国旗颜色
-  let style = random();
-
-  if (style < 0.5 && palette.length >= 2) {
-    let c1 = random(palette);
-    let c2 = random(palette);
-    while (c2 === c1) c2 = random(palette);
-    fill(c1);
-    arc(0, 0, r, r, 90, 270, PIE);
-    fill(c2);
-    arc(0, 0, r, r, 270, 90, PIE);
-  } else {
-    fill(random(palette));
-    ellipse(0, 0, r * 0.8);
-  }
-
-  pop();
-}
-
-function drawOliveBranch() {
-  let scaleFactor = min(windowWidth, windowHeight) / 900;
-  let offsetX = windowWidth / 2 - (450 * scaleFactor);
-  let offsetY = windowHeight / 2 - (425 * scaleFactor);
-  let centerX = offsetX + 750 * scaleFactor;
-  let centerY = offsetY + 150 * scaleFactor;
-
-  stroke(34, 139, 34);
-  strokeWeight(10 * scaleFactor);
-  noFill();
-  bezier(centerX, centerY + 20 * scaleFactor,
-         centerX + 10 * scaleFactor, centerY - 30 * scaleFactor,
-         centerX - 10 * scaleFactor, centerY - 80 * scaleFactor,
-         centerX, centerY - 120 * scaleFactor);
-
-  fill(34, 139, 34);
-  noStroke();
-  push();
-  translate(centerX, centerY - 125 * scaleFactor);
-  rotate(radians(-59));
-  drawLeaf(120 * scaleFactor);
-  pop();
-  push();
-  translate(centerX + 5 * scaleFactor, centerY - 20 * scaleFactor);
-  rotate(radians(-20));
-  drawLeaf(100 * scaleFactor);
-  pop();
-  push();
-  translate(centerX - 98 * scaleFactor, centerY - 100 * scaleFactor);
-  rotate(radians(30));
-  drawLeaf(100 * scaleFactor);
-  pop();
-}
-
-function drawLeaf(length) {
-  beginShape();
-  vertex(0, 0);
-  bezierVertex(length * 0.25, -length * 0.5, length * 0.75, -length * 0.5, length, 0);
-  bezierVertex(length * 0.75, length * 0.5, length * 0.25, 0.5 * length, 0, 0);
-  endShape(CLOSE);
-}
-
-function updateBird() {
-  let scaleFactor = min(windowWidth, windowHeight) / 900;
-  let offsetX = windowWidth / 2 - (450 * scaleFactor);
-  let offsetY = windowHeight / 2 - (425 * scaleFactor);
-  bird = new Bird(scaleFactor, offsetX, offsetY);
-}
-
 class Bird {
   constructor(scaleFactor = 1, offsetX = 0, offsetY = 0) {
     this.scaleFactor = scaleFactor; // Scale relative to canvas size
     this.offsetX = offsetX; // Offset to center the bird
     this.offsetY = offsetY; // Offset to center the bird
     this.colors = {
-      gold: '#d4af37',
-      black: '#000000',
-      green: '#008000',
-      orange: '#ff6e00',
-      cream: '#f0e68c',
-      blue: '#0096c7',
-      grey: '#36454f'
+      gold: [212, 175, 55],   // #d4af37
+      black: [0, 0, 0],       // #000000
+      green: [0, 128, 0],     // #008000
+      orange: [255, 110, 0],  // #ff6e00
+      cream: [240, 230, 140], // #f0e68c
+      blue: [0, 150, 199],    // #0096c7
+      grey: [54, 69, 79]      // #36454f
     };
-}
-  // Applying translation (to shift coordinate system's origin), scaling (for proportionality in size during window resizing), and set noStroke once
-applyTransform() {
-  push();
-  translate(this.offsetX, this.offsetY);
-  scale(this.scaleFactor);
-  noStroke(); // Set once for all shapes
-}
+  }
 
-// Creating a function for the head and beak shape
-drawHead() {
-  fill(this.colors.gold);
-  beginShape();
-  vertex(570, 100);
-  vertex(610, 98);
-  vertex(750, 150);
-  vertex(660, 210);
-  vertex(650, 250);
-  vertex(520, 300);
-  endShape(CLOSE);
+  // Applying translation (to shift the coordinate system's origin), scaling (for proportionality in size during window resizing), and set noStroke once
+  applyTransform() {
+    push();
+    translate(this.offsetX, this.offsetY);
+    scale(this.scaleFactor);
+    noStroke(); // Set once for all shapes
+  }
 
-  // Eye
-  fill(this.colors.black);
-  ellipse(605, 140, 35, 35);
-}
+  // Creating a function for the head and beak shape
+  drawHead() {
+    fill(this.colors.gold);
+    beginShape();
+    vertex(570, 100);
+    vertex(610, 98);
+    vertex(750, 150);
+    vertex(660, 210);
+    vertex(650, 250);
+    vertex(520, 300);
+    endShape(CLOSE);
 
-// Creating a function for the nape shape
-drawNape() {
-  fill(this.colors.green);
-  beginShape();
-  vertex(450, 200);
-  vertex(520, 300);
-  vertex(570, 100);
-  endShape(CLOSE);
-}
+    // Eye
+    fill(this.colors.black);
+    ellipse(605, 140, 35, 35);
+  }
 
-// Creating a function for the neck shape
-drawNeck() {
-  fill(this.colors.green);
-  beginShape();
-  vertex(650, 250);
-  vertex(520, 300);
-  vertex(680, 400);
-  endShape(CLOSE);
-}
+  // Creating a function for the nape shape
+  drawNape() {
+    fill(this.colors.green);
+    beginShape();
+    vertex(450, 200);
+    vertex(520, 300);
+    vertex(570, 100);
+    endShape(CLOSE);
+  }
 
-// Creating a function for the body shapes
-drawBody() {
-  // Back
-  fill(this.colors.blue);
-  beginShape();
-  vertex(450, 200);
-  vertex(520, 300);
-  vertex(340, 330);
-  endShape(CLOSE);
+  // Creating a function for the neck shape
+  drawNeck() {
+    fill(this.colors.green);
+    beginShape();
+    vertex(650, 250);
+    vertex(520, 300);
+    vertex(680, 400);
+    endShape(CLOSE);
+  }
 
-  fill(this.colors.grey);
-  beginShape();
-  vertex(340, 330);
-  vertex(220, 455);
-  vertex(432, 530);
-  endShape(CLOSE);
+  // Creating a function for the body shapes
+  drawBody() {
+    // Back
+    fill(this.colors.blue);
+    beginShape();
+    vertex(450, 200);
+    vertex(520, 300);
+    vertex(340, 330);
+    endShape(CLOSE);
 
-  fill(this.colors.cream);
-  beginShape();
-  vertex(220, 455);
-  vertex(340, 330);
-  vertex(100, 300);
-  endShape(CLOSE);
+    // Side
+    fill(this.colors.grey);
+    beginShape();
+    vertex(340, 330);
+    vertex(220, 455);
+    vertex(432, 530);
+    endShape(CLOSE);
 
-  // Throat
-  fill(this.colors.blue);
-  beginShape();
-  vertex(680, 400);
-  vertex(650, 500);
-  vertex(520, 300);
-  endShape(CLOSE);
+    // Chest
+    fill(this.colors.cream);
+    beginShape();
+    vertex(220, 455);
+    vertex(340, 330);
+    vertex(100, 300);
+    endShape(CLOSE);
 
-  // Belly
-  fill(this.colors.orange);
-  beginShape();
-  vertex(340, 330);
-  vertex(520, 300);
-  vertex(650, 500);
-  vertex(445, 560);
-  endShape(CLOSE);
-}
+    // Throat
+    fill(this.colors.blue);
+    beginShape();
+    vertex(680, 400);
+    vertex(650, 500);
+    vertex(520, 300);
+    endShape(CLOSE);
 
-// Creating a function for the wing shapes
-drawWing() {
-  fill(this.colors.gold);
-  beginShape();
-  vertex(340, 330);
-  vertex(230, 200);
-  vertex(433, 220);
-  endShape(CLOSE);
+    // Belly
+    fill(this.colors.orange);
+    beginShape();
+    vertex(340, 330);
+    vertex(520, 300);
+    vertex(650, 500);
+    vertex(445, 560);
+    endShape(CLOSE);
+  }
 
-  fill(this.colors.cream);
-  beginShape();
-  vertex(230, 200);
-  vertex(100, 50);
-  vertex(340, 80);
-  endShape(CLOSE);
+  // Creating a function for the wing shapes
+  drawWing() {
+    fill(this.colors.gold);
+    beginShape();
+    vertex(340, 330);
+    vertex(230, 200);
+    vertex(433, 220);
+    endShape(CLOSE);
 
-  fill(this.colors.grey);
-  beginShape();
-  vertex(340, 80);
-  vertex(450, 200);
-  vertex(433, 220);
-  vertex(230, 200);
-  endShape(CLOSE);
-}
+    fill(this.colors.cream);
+    beginShape();
+    vertex(230, 200);
+    vertex(100, 50);
+    vertex(340, 80);
+    endShape(CLOSE);
 
-// Creating a function for the tail shape
-drawTail() {
-  fill(this.colors.orange);
-  beginShape();
-  vertex(220, 455);
-  vertex(100, 630);
-  vertex(80, 550);
-  vertex(0, 520);
-  vertex(181, 405);
-  endShape(CLOSE);
-}
+    // Side
+    fill(this.colors.grey);
+    beginShape();
+    vertex(340, 80);
+    vertex(450, 200);
+    vertex(433, 220);
+    vertex(230, 200);
+    endShape(CLOSE);
+  }
 
-// Creating a function for the feather shapes
-drawFeather() {
-  fill(this.colors.green);
-  beginShape();
-  vertex(445, 560);
-  vertex(500, 800);
-  vertex(150, 800);
-  vertex(170, 760);
-  vertex(350, 700);
-  endShape(CLOSE);
+  // Creating a function for the tail shape
+  drawTail() {
+    fill(this.colors.orange);
+    beginShape();
+    vertex(220, 455);
+    vertex(100, 630);
+    vertex(80, 550);
+    vertex(0, 520);
+    vertex(181, 405);
+    endShape(CLOSE);
+  }
 
-  fill(this.colors.gold);
-  beginShape();
-  vertex(170, 760);
-  vertex(350, 700);
-  vertex(350, 501);
-  vertex(300, 483);
-  endShape(CLOSE);
+  // Creating a function for the feather shapes
+  drawFeather() {
+    fill(this.colors.green);
+    beginShape();
+    vertex(445, 560);
+    vertex(500, 800);
+    vertex(150, 800);
+    vertex(170, 760);
+    vertex(350, 700);
+    endShape(CLOSE);
 
-  fill(this.colors.blue);
-  beginShape();
-  vertex(350, 700);
-  vertex(350, 501);
-  vertex(432, 530);
-  vertex(445, 560);
-  endShape(CLOSE);
-}
+    fill(this.colors.gold);
+    beginShape();
+    vertex(170, 760);
+    vertex(350, 700);
+    vertex(350, 501);
+    vertex(300, 483);
+    endShape(CLOSE);
 
+    fill(this.colors.blue);
+    beginShape();
+    vertex(350, 700);
+    vertex(350, 501);
+    vertex(432, 530);
+    vertex(445, 560);
+    endShape(CLOSE);
+  }
+
+  // Main draw method to render the entire bird
   draw() {
     this.applyTransform();
     this.drawHead();
@@ -349,4 +181,130 @@ drawFeather() {
     this.drawFeather();
     pop();
   }
+}
+
+class Background {
+  constructor(numDots = 300) {
+    this.numDots = numDots;
+    this.dots = [];
+    this.initializeDots();
+  }
+
+  //Initialise dots with random positions and velocities
+  initializeDots() {
+    this.dots = [];
+    for (let i = 0; i < this.numDots; i++) {
+      this.dots.push({
+        x: random(width),
+        y: random(height),
+        size: random(2, 6),
+        speed: p5.Vector.random2D().mult(random(0.3, 1))
+      });
+    }
+  }
+
+  // Update and draw dots
+  draw() {
+    fill(255, 255, 255, 60); // Semi-transparent white
+    for (let d of this.dots) {
+      circle(d.x, d.y, d.size);
+      d.x += d.speed.x;
+      d.y += d.speed.y;
+
+      // Reset dot if it moves off-screen
+      if (d.x < -50 || d.x > width + 50 || d.y < -50 || d.y > height + 50) {
+        d.x = random(width);
+        d.y = random(height);
+        d.speed = p5.Vector.random2D().mult(random(0.3, 1));
+      }
+    }
+  }
+
+  // Reinitialize dots on canvas resize
+  resize() {
+    this.initializeDots();
+  }
+}
+
+// Global instances
+let bird;
+let bg; 
+
+// Store scaling/offset for reuse
+let scaleFactor, offsetX, offsetY;
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  rectMode(CENTER);
+  bg = new Background(300);
+  updateTransforms();
+}
+
+function draw() {
+  background(0, 0, 0, 20); // Semi-transparent black for fade effect
+  bg.draw();
+  bird.draw();
+  drawOliveBranch(scaleFactor, offsetX, offsetY);
+}
+
+// To ensure that the canvas is resized and the bird updated when the window size changes
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  updateTransforms();
+  bg.resize();
+}
+
+// Update the bird's scale and position based on canvas size
+function updateTransforms() {
+  scaleFactor = min(windowWidth, windowHeight) / 900;
+  offsetX = windowWidth / 2 - (450 * scaleFactor);
+  offsetY = windowHeight / 2 - (425 * scaleFactor);
+  bird = new Bird(scaleFactor, offsetX, offsetY);
+}
+
+function drawOliveBranch(scaleFactor, offsetX, offsetY) {
+  push();
+  translate(offsetX, offsetY);
+  scale(scaleFactor);
+
+  // Stem
+  stroke(34, 139, 34); // Olive green
+  strokeWeight(15);
+  noFill();
+  let centerX = 752;
+  let centerY = 175;
+  bezier(
+    centerX, centerY + 80,
+    centerX + 30, centerY - 25,
+    centerX - 50, centerY - 120,
+    centerX, centerY - 155
+  );
+
+  // Leaves
+  noStroke();
+  fill(34, 139, 34);
+  push();
+  translate(centerX - 3, centerY - 150);
+  rotate(radians(-35));
+  drawLeaf(80);
+  pop();
+  push();
+  translate(centerX + 5, centerY - 20);
+  rotate(radians(-20));
+  drawLeaf(80);
+  pop();
+  push();
+  translate(centerX - 83, centerY - 105);
+  rotate(radians(30));
+  drawLeaf(80);
+  pop();
+  pop();
+}
+
+function drawLeaf(length) {
+  beginShape();
+  vertex(0, 0);
+  bezierVertex(length * 0.25, -length * 0.5, length * 0.50, -length * 0.5, length, 0);
+  bezierVertex(length * 0.75, length * 0.5, length * 0., length * 0.5, 0, 0);
+  endShape(CLOSE);
 }
