@@ -262,6 +262,7 @@ function updateTransforms() {
   bird = new Bird(scaleFactor, offsetX, offsetY);
 }
 
+// Main draw method to render the olive branch
 function drawOliveBranch(scaleFactor, offsetX, offsetY) {
   push();
   translate(offsetX, offsetY);
