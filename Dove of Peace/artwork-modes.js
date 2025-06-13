@@ -48,3 +48,56 @@ let activeBirds = [];    // This array holds the single Bird object currently be
  * the base scaling factors, offsets, effective dimensions, and the maximum
  * allowed zoom level. It is essential for responsive behaviour.
  */
+function updateTransformsLogic() {
+    /**
+     * Step 1: Calculate the base scaling factor.
+     * We determine how much to scale the artwork so it initially fits well within the window.
+     * The artwork's original design space is 900x900 units.
+     */
+    baseScaleFactor = min(windowWidth, windowHeight) / 900; 
+
+    /**
+     * Step 2: Calculate the base offsets for centering.
+     * These offsets ensure the artwork is positioned in the centre of the canvas
+     * after applying its initial scale. The bird's internal centre is (450, 425).
+     */
+    baseOffsetX = windowWidth / 2 - (BIRD_CENTER_LOCAL_X * baseScaleFactor); 
+    baseOffsetY = windowHeight / 2 - (BIRD_CENTER_LOCAL_Y * baseScaleFactor); 
+    
+    /**
+     * Step 3: Calculate the artwork's effective dimensions.
+     * These dimensions reflect the artwork's actual width and height on the canvas
+     * after the base scaling has been applied.
+     */
+    artworkEffectiveWidth = 900 * baseScaleFactor; 
+    artworkEffectiveHeight = (ARTWORK_LOCAL_MAX_Y - ARTWORK_LOCAL_MIN_Y) * baseScaleFactor;
+
+    /***
+     * Step 4: Calculate the maximum allowed zoom scale.
+     * This calculation ensures that when the user zooms in (in 'zoom' mode),
+     * the artwork does not go completely off-screen. We find the limiting
+     * factor from both top and bottom edges relative to the canvas centre.
+     */
+    let artworkCanvasTopY = baseOffsetY + ARTWORK_LOCAL_MIN_Y * baseScaleFactor;
+    let artworkCanvasBottomY = baseOffsetY + ARTWORK_LOCAL_MAX_Y * baseScaleFactor;
+    let distFromCentreToTop = artworkCanvasTopY - height / 2;
+    let distFromCentreToBottom = artworkCanvasBottomY - height / 2;
+    let maxZoomTopConstraint = (distFromCentreToTop < 0) ? (height / 2) / abs(distFromCentreToTop) : Infinity;
+    let maxZoomBottomConstraint = (distFromCentreToBottom > 0) ? (height / 2) / abs(distFromCentreToBottom) : Infinity;
+    
+    maxAllowedZoomScale = min(maxZoomTopConstraint, maxZoomBottomConstraint);
+    maxAllowedZoomScale = constrain(maxAllowedZoomScale, 1, 2.5); // Cap the zoom to a reasonable maximum.
+
+    /**
+     * Step 5: Initialise or update the main Bird object.
+     * We ensure our global `bird` object reflects the newly calculated base transformations.
+     */
+    if (!bird) {
+        bird = new Bird(baseScaleFactor, baseOffsetX, baseOffsetY);
+    } else {
+        bird.scaleFactor = baseScaleFactor;
+        bird.offsetX = baseOffsetX;
+        bird.offsetY = baseOffsetY;
+    }
+}
+
