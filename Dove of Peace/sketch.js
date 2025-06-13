@@ -186,86 +186,108 @@ class Background {
   }
 }
 
-// Global instances
-let bird;
-let bg; 
+/**
+ * This internal helper function draws the geometric shapes for a single leaf.
+ * It's designed to be called within drawing functions that handle translation and rotation.
+ * length: The length of the leaf.
+ * {p5.Graphics|object} g: The graphics context to draw onto.
+ */
+function _drawLeafShapes(g, length) { 
+  g.beginShape();
+  g.vertex(0, 0);
+  g.bezierVertex(length * 0.25, -length * 0.5, length * 0.50, -length * 0.5, length, 0);
+  g.bezierVertex(length * 0.75, length * 0.5, length * 0.25, length * 0.5, 0, 0); 
+  g.endShape(CLOSE);
+}
 
-// Store scaling/offset for reuse
-let scaleFactor, offsetX, offsetY;
+// Main draw method to render the olive branch
+/**
+* This function renders the olive branch artwork onto a specified graphics context.
+* It applies transformations based on the provided scale, offsetX, and offsetY.
+* scaleFactor: The scaling factor for the olive branch.
+* offsetX: The X-offset for positioning.
+* offsetY: The Y-offset for positioning.
+* {p5.Graphics|object} graphics: The p5 graphics context to draw onto (defaults to the main canvas).
+*/
+function drawOliveBranch(scaleFactor, offsetX, offsetY, graphics = window) { 
+  graphics.push();
+  graphics.translate(offsetX, offsetY);
+  graphics.scale(scaleFactor);
 
+  // Stem
+  graphics.stroke(34, 139, 34); // Olive green
+  graphics.strokeWeight(8);
+  graphics.noFill();
+  let centerX = 752; // Original group code comment kept
+  let centerY = 180; // Original group code comment kept
+  graphics.bezier(
+      centerX, centerY + 80,
+      centerX + 30, centerY - 25,
+      centerX - 50, centerY - 120,
+      centerX, centerY - 155
+  );
+
+  // Leaves
+  graphics.noStroke();
+  graphics.fill(34, 139, 34);
+  graphics.push();
+  graphics.translate(centerX - 3, centerY - 150);
+  graphics.rotate(radians(-35));
+  _drawLeafShapes(graphics, 80); // Call internal leaf drawing helper
+  graphics.pop();
+  graphics.push();
+  graphics.translate(centerX + 5, centerY - 20);
+  graphics.rotate(radians(-20));
+  _drawLeafShapes(graphics, 80);
+  graphics.pop();
+  graphics.push();
+  graphics.translate(centerX - 81, centerY - 105);
+  graphics.rotate(radians(30));
+  _drawLeafShapes(graphics, 80);
+  graphics.pop();
+  graphics.pop();
+}
+
+/**
+* The p5.js setup() function. This runs once when the program starts.
+* It initialises the canvas, background elements, and the off-screen buffer.
+* It then calls the primary initialisation function for the advanced modes.
+*/
 function setup() {
   createCanvas(windowWidth, windowHeight);
   rectMode(CENTER);
   bg = new Background(300);
-  updateTransforms();
+  // Initialise our background object.
+  pGraphics = createGraphics(width, height); // Initialise the off-screen graphics buffer.
+
+  // Delegate initial setup for advanced modes to artwork-modes.js.
+  initializeAdvancedModes(); 
 }
 
+/**
+* The p5.js draw() function. This runs repeatedly, creating the animation loop.
+* It delegates the main rendering logic to the advanced modes file.
+*/
 function draw() {
-  background(0, 0, 0, 20); // Semi-transparent black for fade effect
-  bg.draw();
-  bird.draw();
-  drawOliveBranch(scaleFactor, offsetX, offsetY);
+  // We delegate the actual rendering logic to `renderArtwork` in artwork-modes.js.
+  renderArtwork();
 }
 
-// To ensure that the canvas is resized and the bird updated when the window size changes
+/**
+ * The p5.js windowResized() function. This runs automatically when the browser window is resized.
+ * It adjusts the canvas size and delegates further resizing logic.
+ */
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
-  updateTransforms();
-  bg.resize();
+  // Delegate further resize handling to `handleResize` in artwork-modes.js.
+  handleResize(); 
 }
 
-// Update the bird's scale and position based on canvas size
-function updateTransforms() {
-  scaleFactor = min(windowWidth, windowHeight) / 900;
-  offsetX = windowWidth / 2 - (450 * scaleFactor);
-  offsetY = windowHeight / 2 - (425 * scaleFactor);
-  bird = new Bird(scaleFactor, offsetX, offsetY);
-}
-
-// Main draw method to render the olive branch
-function drawOliveBranch(scaleFactor, offsetX, offsetY) {
-  push();
-  translate(offsetX, offsetY);
-  scale(scaleFactor);
-
-  // Stem
-  stroke(34, 139, 34); // Olive green
-  strokeWeight(8);
-  noFill();
-  let centerX = 752;
-  let centerY = 180;
-  bezier(
-    centerX, centerY + 80,
-    centerX + 30, centerY - 25,
-    centerX - 50, centerY - 120,
-    centerX, centerY - 155
-  );
-
-  // Leaves
-  noStroke();
-  fill(34, 139, 34);
-  push();
-  translate(centerX - 3, centerY - 150);
-  rotate(radians(-35));
-  drawLeaf(80);
-  pop();
-  push();
-  translate(centerX + 5, centerY - 20);
-  rotate(radians(-20));
-  drawLeaf(80);
-  pop();
-  push();
-  translate(centerX - 81, centerY - 105);
-  rotate(radians(30));
-  drawLeaf(80);
-  pop();
-  pop();
-}
-
-function drawLeaf(length) {
-  beginShape();
-  vertex(0, 0);
-  bezierVertex(length * 0.25, -length * 0.5, length * 0.50, -length * 0.5, length, 0);
-  bezierVertex(length * 0.75, length * 0.5, length * 0., length * 0.5, 0, 0);
-  endShape(CLOSE);
+/**
+ * The p5.js keyPressed() function. This runs once every time a key is pressed.
+ * It delegates key press handling to the advanced modes file.
+ */
+function keyPressed() {
+    // Delegate key press handling to `handleKeyPress` in artwork-modes.js.
+    handleKeyPress(key);
 }
