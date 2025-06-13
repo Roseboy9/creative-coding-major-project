@@ -1,4 +1,40 @@
+// Constants for the artwork's effective top and bottom points in its original 900x900 space
+// These are determined by the geometry of the bird and the olive branch.
+const ARTWORK_LOCAL_MIN_Y = -10; 
+const ARTWORK_LOCAL_MAX_Y = 800;
+const BIRD_CENTER_LOCAL_X = 450;
+const BIRD_CENTER_LOCAL_Y = 425;
+
+/**
+ * These global variables define the core components and transformations
+ * managed by sketch.js, setting up the overall canvas and main artwork.
+ */
+let bird;   // This variable will hold our Bird object.
+let bg;     // This variable will hold our Background object, responsible for the dots.
+let baseScaleFactor; // This holds the base scaling factor for the artwork to fit the window.
+let baseOffsetX;     // This holds the base X-offset to centre the artwork.
+let baseOffsetY;     // This holds the base Y-offset to centre the artwork.
+let artworkEffectiveWidth; // This variable stores the calculated effective width of the artwork after base scaling.
+let artworkEffectiveHeight; // This variable stores the calculated effective height of the artwork after base scaling.
+
+/**
+ * This p5.js global function will hold an off-screen graphics buffer.
+ * We need this buffer to draw parts of our artwork independently
+ * before processing them for effects like pixelation.
+ */
+let pGraphics; 
+
+/**
+ * The Bird class defines the properties and drawing logic for the dove artwork.
+ * It encapsulates the colours and methods required to render the bird.
+ */
 class Bird {
+  /**
+     * Initialises a new Bird instance.
+     * @param {number} scaleFactor The scale of the bird relative to its original size.
+     * @param {number} offsetX The X-offset for positioning the bird on the canvas.
+     * @param {number} offsetY The Y-offset for positioning the bird on the canvas.
+     */
   constructor(scaleFactor = 1, offsetX = 0, offsetY = 0) {
     this.scaleFactor = scaleFactor; // Scale relative to canvas size
     this.offsetX = offsetX; // Offset to center the bird
@@ -13,13 +49,17 @@ class Bird {
       grey: [221, 221, 221], // #DDDDDD
     };
   }
-
-  // Applying translation (to shift the coordinate system's origin), scaling (for proportionality in size during window resizing), and set noStroke once
+  /**
+     * This method applies necessary transformations (translation and scaling)
+     * to the graphics context before drawing the bird's shapes. This allows
+     * us to position and size the bird correctly.
+     * @param {p5.Graphics|object} g The graphics context to apply transformations to (e.g., main canvas or pGraphics).
+     */
   applyTransform() {
     push();
     translate(this.offsetX, this.offsetY);
     scale(this.scaleFactor);
-    noStroke(); // Set once for all shapes
+    noStroke(); // Set once for all shapes in the bird to prevent outlines.
   }
 
   // Creating a function for the head and beak shape
