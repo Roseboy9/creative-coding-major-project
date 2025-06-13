@@ -31,9 +31,9 @@ let pGraphics;
 class Bird {
   /**
      * Initialises a new Bird instance.
-     * @param {number} scaleFactor The scale of the bird relative to its original size.
-     * @param {number} offsetX The X-offset for positioning the bird on the canvas.
-     * @param {number} offsetY The Y-offset for positioning the bird on the canvas.
+     * scaleFactor: The scale of the bird relative to its original size.
+     * offsetX: The X-offset for positioning the bird on the canvas.
+     * offsetY: The Y-offset for positioning the bird on the canvas.
      */
   constructor(scaleFactor = 1, offsetX = 0, offsetY = 0) {
     this.scaleFactor = scaleFactor; // Scale relative to canvas size
@@ -49,11 +49,12 @@ class Bird {
       grey: [221, 221, 221], // #DDDDDD
     };
   }
+
   /**
      * This method applies necessary transformations (translation and scaling)
      * to the graphics context before drawing the bird's shapes. This allows
      * us to position and size the bird correctly.
-     * @param {p5.Graphics|object} g The graphics context to apply transformations to (e.g., main canvas or pGraphics).
+     * {p5.Graphics|object} g: The graphics context to apply transformations to (e.g., main canvas or pGraphics).
      */
   applyTransform() {
     push();
@@ -62,168 +63,82 @@ class Bird {
     noStroke(); // Set once for all shapes in the bird to prevent outlines.
   }
 
-  // Creating a function for the head and beak shape
-  drawHead() {
-    fill(this.colors.pale);
-    beginShape();
-    vertex(570, 100);
-    vertex(610, 98);
-    vertex(750, 150);
-    vertex(660, 210);
-    vertex(650, 250);
-    vertex(520, 300);
-    endShape(CLOSE);
+  /**
+     * This internal method draws all the raw geometric shapes that form the bird.
+     * It directly draws to the provided graphics context 'g' without applying
+     * any translation or scaling, as those are handled by `applyTransform`.
+     * {p5.Graphics|object} g: The graphics context to draw shapes onto.
+     */
+    _drawShapes(g) {
+        g.noStroke();
+        // Head
+        g.fill(this.colors.pale);
+        g.beginShape();
+        g.vertex(570, 100); g.vertex(610, 98); g.vertex(750, 150); g.vertex(660, 210); g.vertex(650, 250); g.vertex(520, 300);
+        g.endShape(CLOSE);
+        // Eye
+        g.fill(this.colors.black);
+        g.ellipse(605, 140, 35, 35);
+        // Nape
+        g.fill(this.colors.ghost);
+        g.beginShape();
+        g.vertex(450, 200); g.vertex(520, 300); g.vertex(570, 100);
+        g.endShape(CLOSE);
+        // Neck
+        g.fill(this.colors.ghost);
+        g.beginShape();
+        g.vertex(650, 250); g.vertex(520, 300); g.vertex(680, 400);
+        g.endShape(CLOSE);
+        // Body
+        g.fill(this.colors.greylight);
+        g.beginShape(); g.vertex(450, 200); g.vertex(520, 300); g.vertex(340, 330); g.endShape(CLOSE);
+        g.fill(this.colors.grey);
+        g.beginShape(); g.vertex(340, 330); g.vertex(220, 455); g.vertex(432, 530); g.endShape(CLOSE);
+        g.fill(this.colors.cream);
+        g.beginShape(); g.vertex(220, 455); g.vertex(340, 330); g.vertex(100, 300); g.endShape(CLOSE);
+        g.fill(this.colors.greylight);
+        g.beginShape(); g.vertex(680, 400); g.vertex(650, 500); g.vertex(520, 300); g.endShape(CLOSE);
+        g.fill(this.colors.white);
+        g.beginShape(); g.vertex(340, 330); g.vertex(520, 300); g.vertex(650, 500); g.vertex(445, 560); g.endShape(CLOSE);
+        // Wing
+        g.fill(this.colors.pale);
+        g.beginShape(); g.vertex(340, 330); g.vertex(230, 200); g.vertex(433, 220); g.endShape(CLOSE);
+        g.fill(this.colors.cream);
+        g.beginShape(); g.vertex(230, 200); g.vertex(100, 50); g.vertex(340, 80); g.endShape(CLOSE);
+        g.fill(this.colors.grey);
+        g.beginShape(); g.vertex(340, 80); g.vertex(450, 200); g.vertex(433, 220); g.vertex(230, 200); g.endShape(CLOSE);
+        // Tail
+        g.fill(this.colors.white);
+        g.beginShape(); g.vertex(220, 455); g.vertex(100, 630); g.vertex(80, 550); g.vertex(0, 520); g.vertex(181, 405); g.endShape(CLOSE);
+        // Feather
+        g.fill(this.colors.ghost);
+        g.beginShape(); g.vertex(445, 560); g.vertex(500, 800); g.vertex(150, 800); g.vertex(170, 760); g.vertex(350, 700); g.endShape(CLOSE);
+        g.fill(this.colors.white);
+        g.beginShape(); g.vertex(170, 760); g.vertex(350, 700); g.vertex(350, 501); g.vertex(300, 483); g.endShape(CLOSE);
+        g.fill(this.colors.greylight);
+        g.beginShape(); g.vertex(350, 700); g.vertex(350, 501); g.vertex(432, 530); g.vertex(445, 560); g.endShape(CLOSE);
+    }
 
-    // Eye
-    fill(this.colors.black);
-    ellipse(605, 140, 35, 35);
-  }
-
-  // Creating a function for the nape shape
-  drawNape() {
-    fill(this.colors.ghost);
-    beginShape();
-    vertex(450, 200);
-    vertex(520, 300);
-    vertex(570, 100);
-    endShape(CLOSE);
-  }
-
-  // Creating a function for the neck shape
-  drawNeck() {
-    fill(this.colors.ghost);
-    beginShape();
-    vertex(650, 250);
-    vertex(520, 300);
-    vertex(680, 400);
-    endShape(CLOSE);
-  }
-
-  // Creating a function for the body shapes
-  drawBody() {
-    // Back
-    fill(this.colors.greylight);
-    beginShape();
-    vertex(450, 200);
-    vertex(520, 300);
-    vertex(340, 330);
-    endShape(CLOSE);
-
-    // Side
-    fill(this.colors.grey);
-    beginShape();
-    vertex(340, 330);
-    vertex(220, 455);
-    vertex(432, 530);
-    endShape(CLOSE);
-
-    // Chest
-    fill(this.colors.cream);
-    beginShape();
-    vertex(220, 455);
-    vertex(340, 330);
-    vertex(100, 300);
-    endShape(CLOSE);
-
-    // Throat
-    fill(this.colors.greylight);
-    beginShape();
-    vertex(680, 400);
-    vertex(650, 500);
-    vertex(520, 300);
-    endShape(CLOSE);
-
-    // Belly
-    fill(this.colors.white);
-    beginShape();
-    vertex(340, 330);
-    vertex(520, 300);
-    vertex(650, 500);
-    vertex(445, 560);
-    endShape(CLOSE);
-  }
-
-  // Creating a function for the wing shapes
-  drawWing() {
-    fill(this.colors.pale);
-    beginShape();
-    vertex(340, 330);
-    vertex(230, 200);
-    vertex(433, 220);
-    endShape(CLOSE);
-
-    fill(this.colors.cream);
-    beginShape();
-    vertex(230, 200);
-    vertex(100, 50);
-    vertex(340, 80);
-    endShape(CLOSE);
-
-    // Side
-    fill(this.colors.grey);
-    beginShape();
-    vertex(340, 80);
-    vertex(450, 200);
-    vertex(433, 220);
-    vertex(230, 200);
-    endShape(CLOSE);
-  }
-
-  // Creating a function for the tail shape
-  drawTail() {
-    fill(this.colors.white);
-    beginShape();
-    vertex(220, 455);
-    vertex(100, 630);
-    vertex(80, 550);
-    vertex(0, 520);
-    vertex(181, 405);
-    endShape(CLOSE);
-  }
-
-  // Creating a function for the feather shapes
-  drawFeather() {
-    fill(this.colors.ghost);
-    beginShape();
-    vertex(445, 560);
-    vertex(500, 800);
-    vertex(150, 800);
-    vertex(170, 760);
-    vertex(350, 700);
-    endShape(CLOSE);
-
-    fill(this.colors.white);
-    beginShape();
-    vertex(170, 760);
-    vertex(350, 700);
-    vertex(350, 501);
-    vertex(300, 483);
-    endShape(CLOSE);
-
-    fill(this.colors.greylight);
-    beginShape();
-    vertex(350, 700);
-    vertex(350, 501);
-    vertex(432, 530);
-    vertex(445, 560);
-    endShape(CLOSE);
-  }
-
-  // Main draw method to render the entire bird
-  draw() {
-    this.applyTransform();
-    this.drawHead();
-    this.drawNape();
-    this.drawNeck();
-    this.drawBody();
-    this.drawWing();
-    this.drawTail();
-    this.drawFeather();
-    pop();
-  }
+    /**
+     * This is the main draw method for the Bird class. It applies the necessary
+     * transformations and then calls the internal method to draw all the shapes.
+     * {p5.Graphics|object} graphics: The p5 graphics context to draw onto (defaults to the main canvas).
+     */
+    draw(graphics = window) { 
+        this.applyTransform(graphics);
+        this._drawShapes(graphics); // Call the internal drawing method
+        graphics.pop();
+    }
 }
 
+/**
+ * The Background class manages the collection of floating dots that constitute the background.
+ */
 class Background {
+  /**
+     * Initialises a new Background instance.
+     * numDots: The number of dots in the background.
+     */
   constructor(numDots = 300) {
     this.numDots = numDots;
     this.dots = [];
@@ -244,8 +159,13 @@ class Background {
   }
 
   // Update and draw dots
-  draw() {
-    fill(255, 255, 255, 60); // Semi-transparent white
+  /**
+     * This method updates the position of each background dot and draws them onto the specified graphics context.
+     * It also handles resetting dots that move off-screen.
+     * @param {p5.Graphics|object} graphics The p5 graphics context to draw onto (defaults to the main canvas).
+     */
+  draw(graphics = window) { 
+    graphics.fill(255, 255, 255, 60); // Semi-transparent white
     for (let d of this.dots) {
       circle(d.x, d.y, d.size);
       d.x += d.speed.x;
@@ -260,7 +180,7 @@ class Background {
     }
   }
 
-  // Reinitialize dots on canvas resize
+  // Reinitialise dots on canvas resize
   resize() {
     this.initializeDots();
   }
