@@ -1,4 +1,4 @@
-# User Instructions
+## User Instructions
 
 My variation of our team’s group artwork offers diverse user experiences through a series of interactive and autonomous modes. You can switch between these states using specific keyboard inputs:
 
@@ -14,3 +14,22 @@ My variation of our team’s group artwork offers diverse user experiences throu
 
 These three states are adapted from class exercises in Week 7 _(Object-Oriented Programming)_ and Week 10 _(Easing & Transformation)_.
 
+## Overview of Approach
+My primary method of variation is user input (mouse and keyboard), with a distinct inclusion of Perlin noise and reliance on time-based animation for core movement.
+- **Mouse Interaction:** In _Zoom Mode_, the vertical position of the mouse (mouseY) directly controls the scaling factor of the main artwork. 
+- **Keyboard Interaction (‘M’ and ‘P’ keys):** These keys toggle between the different interactive and autonomous display modes. 
+- **Time (frameCount):** The continuous horizontal drifting motion of the dove in both _Float_ and _Pixelate_ & _Glitch_ modes is achieved by incrementally updating its X-position in each animation frame. 
+- **Perlin Noise (noise()):** The organic up-and-down bobbing motion of the dove in _Float_ and _Pixelate_ & _Glitch_ modes is generated using Perlin noise, providing a natural, non-repetitive undulating movement.
+
+I focused on dynamically altering the movement (horizontal drift, vertical bobbing), overall size (zoom), and visual rendering style (smooth vs. pixelated/glitched) of the central dove and olive branch. The background dots also contribute to the animation by providing consistent movement and, in Zoom Mode, a complementary scaling effect.
+
+My individual variation stands out from Shuyao’s and Shannon’s through its multi-layered, interactive, and spatially aware dynamism. Unlike Shuyao’s focus on audio-driven particle animation or Shannon’s use of time triggers for discrete animation events, my approach centres on providing a multi-mode user experience where the primary artwork’s behaviour is directly controlled by user input. My piece uniquely features autonomous yet organically bobbing movement (via Perlin noise) and a conditional, split-screen transformation that pixelates and glitches the dove only when it crosses a specific spatial boundary—a level of targeted, real-time visual complexity not present in simpler, single-input or event-driven animations.
+
+## Technical Overview
+My code animates the group artwork through a modular, object-oriented design and distinct control flow. The project is organised into two .js files: >sketch.js handles the p5.js setup and drawing delegation, while artwork-modes.js contains mode logic and advanced animations. This separation promotes code organisation and maintainability, aligning with semester topics on Programming Libraries (p5.js) and Advanced Topics – OOP, Prototypes, Classes.
+From the group code, the main visual components—Bird and Background—are implemented as classes, encapsulating properties and behaviours. In my variation, the Bird class was refactored with an internal _drawShapes(g) method, allowing its form to be drawn to any graphics context, including an off-screen buffer.
+I introduced mode management to drive the artwork’s interactivity. A currentMode variable tracks the active display state. The keyPressed() function, which calls handleKeyPress() in artwork-modes.js, uses conditionals (if/else if statements) to update currentMode based on ‘M’ and ‘P’ key presses. The draw() loop (calling renderArtwork() in artwork-modes.js) also uses conditionals to execute specific rendering and animation logic for the active mode.
+Distinct animations are used for movement and visual effects. In Float and Pixelate modes, autonomous movement occurs as currentBird.offsetX increments each frame, with seamless looping by resetting its position off-screen. This leverages JavaScript functions and operators, and the continuous nature of draw(). For vertical bobbing, bobbingOffset is derived from noise(bobbingNoiseOffset), with bobbingNoiseOffset incrementing slowly to create a non-repeating, organic oscillation. The lerp() function (from Easing and Transformations) smooths bird.offsetY towards this target. In Zoom Mode, targetZoomScale is calculated by mapping mouseY, and zoomScale interpolates towards this target using lerp(), creating a responsive zoom effect.
+The Split-Screen Pixelation and Glitch effect uses an off-screen graphics buffer (pGraphics) created with createGraphics() in p5.js. Although this is a core technique from programming libraries such as p5.js, it was beyond the scope of this semester’s coursework. The smooth dove and olive branch are first drawn onto pGraphics. Then, in the draw() loop, the left half of pGraphics is copied directly to the main canvas using image(). For the right half, I iterate through pixelSize square blocks. For each block, pGraphics.get(x, y) samples the colour. If the sampled pixel has colour content, I draw a rect() on the main canvas using that colour, with random() displacement and size variation to create the glitch effect.
+Finally, I retain the group’s windowResized() logic, now delegated to handleResize() in artwork-modes.js, to adjust canvas size and recalculate base scaling and offsets. This ensures the artwork maintains proportions and responsiveness across different screen sizes.
+#
